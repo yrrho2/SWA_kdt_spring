@@ -11,6 +11,11 @@ public class OrderService {
         this.voucherService = voucherService;
         this.orderRepositry = orderRepositry;
     }
+    public Order createOrder(UUID customerId, List<OrderItem> orderItems){
+        var order = new Order(UUID.randomUUID(), customerId, orderItems);
+        orderRepositry.insert(order);
+        return order;
+    }
     public Order createOrder(UUID customerId, List<OrderItem> orderItems, UUID voucherID){
         var voucher = voucherService.getVoucher(voucherID);
         var order = new Order(UUID.randomUUID(), customerId, orderItems, voucher);
