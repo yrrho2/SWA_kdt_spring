@@ -31,6 +31,10 @@ public class AppConfiguration {
     }
     @Bean
     public VoucherService voucherService(VoucherRepository voucherRepository){
+        // 클래스를 작성해주면 메서드의 매개변수로 스프링이 알아서 위에 매개변수에 있는 Bean을 찾아서
+        // 객체를 이친구가 만들어질때 전달이 된다,,,?
+        // VoucherService라는 Bean을 만들때 Spring이 매개변수에 있는 VoucherRepository Bean을 찾아서 준다는 소리인가?
+        // 이게 뭐가다른거지?
         return new VoucherService(voucherRepository);
     }
     @Bean
