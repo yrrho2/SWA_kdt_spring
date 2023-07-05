@@ -8,7 +8,7 @@ import java.util.UUID;
 public class OrderTester {
     public static void main(String[] args) {
         var customerId = UUID.randomUUID();
-        var orderContext = new OrderContext();
+        var orderContext = new AppConfiguration();
         var orderService = orderContext.orderService();
         var order = orderService.createOrder(customerId, new ArrayList<OrderItem>(){{
             add(new OrderItem(UUID.randomUUID(), 100L,1));
