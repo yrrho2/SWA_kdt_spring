@@ -1,6 +1,6 @@
 package org.prgrms.kdtspringdemo;
 
-public class OrderRepositry {
-    public void insert(Order order) {
-    }
+public interface OrderRepositry {
+    public void insert(Order order);
+
 }
