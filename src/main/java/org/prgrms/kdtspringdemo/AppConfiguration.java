@@ -30,11 +30,11 @@ public class AppConfiguration {
         };
     }
     @Bean
-    public VoucherService voucherService(){
-        return new VoucherService(voucherRepository());
+    public VoucherService voucherService(VoucherRepository voucherRepository){
+        return new VoucherService(voucherRepository);
     }
     @Bean
-    public OrderService orderService(){
-        return new OrderService(voucherService(),orderRepositry());
+    public OrderService orderService(VoucherService voucherService ,OrderRepositry orderRepositry){
+        return new OrderService(voucherService,orderRepositry);
     }
 }
