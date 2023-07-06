@@ -4,6 +4,7 @@ import org.prgrms.kdtspringdemo.order.OrderItem;
 import org.prgrms.kdtspringdemo.order.OrderService;
 import org.prgrms.kdtspringdemo.voucher.FixedAmountVoucher;
 import org.prgrms.kdtspringdemo.voucher.VoucherRepository;
+import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.Assert;
 import java.text.MessageFormat;
@@ -16,8 +17,14 @@ public class OrderTester {
 
 
         var customerId = UUID.randomUUID();
-        var voucherRepository = applicationContext.getBean(VoucherRepository.class);
+
+        var voucherRepository = BeanFactoryAnnotationUtils.qualifiedBeanOfType(applicationContext.getBeanFactory(), VoucherRepository.class, "Memory");
+        // BeanFactoryAnnotationUtils 기능에서, qualified된 Bean을 가져오기위해. applicationContext의 콩공장과, Voucher레포지토리에서, "Memory"라는 Bean을 가져옴,
+        // 즉 MemoryVoucherRepository를 가져올 수 있게됨.
+
+        //var voucherRepository = applicationContext.getBean(VoucherRepository.class); 여기도 뭔지 모름. 전해줄수없음.
         var voucher = voucherRepository.insert(new FixedAmountVoucher(UUID.randomUUID(), 10L));
+
         var orderService = applicationContext.getBean(OrderService.class);
         var order = orderService.createOrder(customerId, new ArrayList<OrderItem>(){{
             add(new OrderItem(UUID.randomUUID(), 100L,1));
