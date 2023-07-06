@@ -1,5 +1,9 @@
 package org.prgrms.kdtspringdemo;
 
+import org.prgrms.kdtspringdemo.order.OrderItem;
+import org.prgrms.kdtspringdemo.order.OrderService;
+import org.prgrms.kdtspringdemo.voucher.FixedAmountVoucher;
+import org.prgrms.kdtspringdemo.voucher.VoucherRepository;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.Assert;
 import java.text.MessageFormat;

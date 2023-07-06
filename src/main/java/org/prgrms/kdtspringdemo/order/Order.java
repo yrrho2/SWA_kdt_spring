@@ -1,4 +1,6 @@
-package org.prgrms.kdtspringdemo;
+package org.prgrms.kdtspringdemo.order;
+
+import org.prgrms.kdtspringdemo.voucher.Voucher;
 
 import java.util.Optional;
 import java.util.UUID;
