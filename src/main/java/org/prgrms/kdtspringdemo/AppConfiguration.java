@@ -10,20 +10,20 @@ public class AppConfiguration {
     // Configuration은 bean을 정의하는곳.
     // @Bean은 각 configuration metadata가 되도록 정의함.
     @Bean
-    public OrderRepositry orderRepositry(){
-        return new OrderRepositry() {
-            @Override
-            public void insert(Order order) {
-
-            }
-        };
-    }
-    @Bean
     public VoucherRepository voucherRepository(){
         return new VoucherRepository() {
             @Override
             public Optional<Voucher> findById(UUID voucherId) {
                 return Optional.empty();
+            }
+        };
+    }
+    @Bean
+    public OrderRepositry orderRepositry(){
+        return new OrderRepositry() {
+            @Override
+            public void insert(Order order) {
+
             }
         };
     }
@@ -37,6 +37,10 @@ public class AppConfiguration {
     }
     @Bean
     public OrderService orderService(VoucherService voucherService ,OrderRepositry orderRepositry){
+        // 여기다가 파라메타러 VoucherService 쓰면 위에서 만든거 가져온데
+        // 이렇게 프레임워크가 의존관계를 형성해준데. 이게 위의 답인듯?
+        // bean끼리 의존관계 형성하나봄
         return new OrderService(voucherService,orderRepositry);
     }
+    //grow
 }
