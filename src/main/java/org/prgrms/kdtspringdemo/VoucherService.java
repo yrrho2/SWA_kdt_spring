@@ -1,7 +1,10 @@
 package org.prgrms.kdtspringdemo;
 
+import org.springframework.stereotype.Service;
+
 import java.util.UUID;
 
+@Service
 public class VoucherService {
     private final VoucherRepository voucherRepository;
 
