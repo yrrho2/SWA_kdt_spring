@@ -9,26 +9,24 @@ import org.springframework.context.annotation.AnnotationConfigApplicationContext
 import org.springframework.util.Assert;
 import java.text.MessageFormat;
 import java.util.ArrayList;
+import java.util.List;
 import java.util.UUID;
 
 public class OrderTester {
     public static void main(String[] args) {
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
 
+        var environment = applicationContext.getEnvironment();
+        var version = environment.getProperty("kdt.version");
+        var MinimumOrderAmount = environment.getProperty("kdt.minimum-order-amount", Integer.class);
+        var supportVendos = environment.getProperty("kdt.support-vendors", List.class);
+        System.out.println(MessageFormat.format("{0}", version));
+        System.out.println(MessageFormat.format("{0}", MinimumOrderAmount));
+        System.out.println(MessageFormat.format("{0}", supportVendos));
 
         var customerId = UUID.randomUUID();
 
         var voucherRepository = BeanFactoryAnnotationUtils.qualifiedBeanOfType(applicationContext.getBeanFactory(), VoucherRepository.class, "Memory");
-        var voucherRepository2 = BeanFactoryAnnotationUtils.qualifiedBeanOfType(applicationContext.getBeanFactory(), VoucherRepository.class, "Memory");
-
-        System.out.println(MessageFormat.format("voucherRepository {0}", voucherRepository));
-        System.out.println(MessageFormat.format("voucherRepository2 {0}", voucherRepository2));
-        System.out.println(MessageFormat.format("Equal => {0}", voucherRepository.equals(voucherRepository2)));
-        // 싱글톤이라 둘이 같음. 프로토 타입이면 다름.
-
-
-
-
         var voucher = voucherRepository.insert(new FixedAmountVoucher(UUID.randomUUID(), 10L));
 
         var orderService = applicationContext.getBean(OrderService.class);
