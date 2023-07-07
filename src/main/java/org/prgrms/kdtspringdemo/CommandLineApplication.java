@@ -4,7 +4,6 @@ import org.prgrms.kdtspringdemo.voucher.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.io.*;
-import java.nio.file.Files;
 import java.util.*;
 
 
@@ -43,7 +42,10 @@ public class CommandLineApplication {
                 UL.add(vUUID);
 
             }else if(line.equals("list") | line.equals("l")){
-                for(UUID u : UL){
+                file.RefreshList();
+                Iterator iterator = file.getVoucher().iterator();
+                while(iterator.hasNext()){
+                    UUID u = UUID.fromString(iterator.next().toString());
                     System.out.println(u.toString());
                 }
 
@@ -57,10 +59,10 @@ class FileListSample {
     private String dirPath = "C:\\Users\\user\\dev-prgms\\kdt-spring-demo\\src\\main\\java\\org\\prgrms\\kdtspringdemo\\voucherFiles";
     private File dir = new File(dirPath);
     private File[] files;
+    private File[] fileString = dir.listFiles();
 
     public FileListSample() {
         this.files = dir.listFiles(new FileFilter() {
-
             @Override
             public boolean accept(File file) {
                 if(file.isFile() && file.getName().toUpperCase().startsWith("")) {
@@ -70,6 +72,9 @@ class FileListSample {
                 }
             }
         });
+    }
+    public void RefreshList(){
+        fileString = dir.listFiles();
     }
 
     public File[] getFiles() {
@@ -87,4 +92,21 @@ class FileListSample {
         return voucher;
     }
     // 출처 https://docko.tistory.com/621
+
+    public ArrayList<UUID> getVoucher(){
+        ArrayList<UUID> FileUUID = new ArrayList<>();
+        try{
+            for(File file : fileString ){
+                BufferedReader br = new BufferedReader(new FileReader(dir+"//"+file.getName()));
+                String StringUUID = br.readLine();
+                FileUUID.add(UUID.fromString(StringUUID));
+                br.close();
+            }
+        } catch (IOException e){
+            System.out.println(e.getMessage());
+            e.getStackTrace();
+        }
+        return FileUUID;
+    }
+
 }
