@@ -1,4 +1,4 @@
-package org.prgrms.kdtspringdemo;
+package org.prgrms.kdtspringdemo.voucher;
 
 import java.util.UUID;
 
@@ -13,7 +13,7 @@ public class FixedAmountVoucher implements Voucher {
 
     @Override
     public UUID getVoucherId() {
-        return null;
+        return this.voucherId;
     }
 
     public long discount(long beforeDiscount) {

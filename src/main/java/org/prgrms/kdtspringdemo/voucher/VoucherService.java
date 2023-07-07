@@ -1,11 +1,17 @@
-package org.prgrms.kdtspringdemo;
+package org.prgrms.kdtspringdemo.voucher;
+
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.stereotype.Service;
 
 import java.util.UUID;
 
+@Service
 public class VoucherService {
-    private final VoucherRepository voucherRepository;
 
-    public VoucherService(VoucherRepository voucherRepository) {
+    private VoucherRepository voucherRepository;
+
+    public VoucherService(@Qualifier("Memory") VoucherRepository voucherRepository) {
         this.voucherRepository = voucherRepository;
     }
 
