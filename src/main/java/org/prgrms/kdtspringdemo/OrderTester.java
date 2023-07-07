@@ -19,10 +19,16 @@ public class OrderTester {
         var customerId = UUID.randomUUID();
 
         var voucherRepository = BeanFactoryAnnotationUtils.qualifiedBeanOfType(applicationContext.getBeanFactory(), VoucherRepository.class, "Memory");
-        // BeanFactoryAnnotationUtils 기능에서, qualified된 Bean을 가져오기위해. applicationContext의 콩공장과, Voucher레포지토리에서, "Memory"라는 Bean을 가져옴,
-        // 즉 MemoryVoucherRepository를 가져올 수 있게됨.
+        var voucherRepository2 = BeanFactoryAnnotationUtils.qualifiedBeanOfType(applicationContext.getBeanFactory(), VoucherRepository.class, "Memory");
 
-        //var voucherRepository = applicationContext.getBean(VoucherRepository.class); 여기도 뭔지 모름. 전해줄수없음.
+        System.out.println(MessageFormat.format("voucherRepository {0}", voucherRepository));
+        System.out.println(MessageFormat.format("voucherRepository2 {0}", voucherRepository2));
+        System.out.println(MessageFormat.format("Equal => {0}", voucherRepository.equals(voucherRepository2)));
+        // 싱글톤이라 둘이 같음. 프로토 타입이면 다름.
+
+
+
+
         var voucher = voucherRepository.insert(new FixedAmountVoucher(UUID.randomUUID(), 10L));
 
         var orderService = applicationContext.getBean(OrderService.class);
@@ -37,3 +43,8 @@ public class OrderTester {
 // applicationContext에서 Bean을 만들수있음.
 // 왜? 강의에서 설명했듯이 application context는 bean 공장을 상속받기때문에.
 // AppConfiguration.java 파일에서 @Configuration으로 정의한다고함
+
+// BeanFactoryAnnotationUtils 기능에서, qualified된 Bean을 가져오기위해. applicationContext의 콩공장과, Voucher레포지토리에서, "Memory"라는 Bean을 가져옴,
+// 즉 MemoryVoucherRepository를 가져올 수 있게됨.
+
+//var voucherRepository = applicationContext.getBean(VoucherRepository.class); 여기도 뭔지 모름. 전해줄수없음.
