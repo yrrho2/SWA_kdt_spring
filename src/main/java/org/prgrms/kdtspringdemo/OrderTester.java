@@ -37,6 +37,7 @@ public class OrderTester {
         }}, voucher.getVoucherId());
 
         Assert.isTrue(order.totalAmount()==90L, MessageFormat.format("totalAmount {0} is not 90L",order.totalAmount()));
+        applicationContext.close();
     }
 }
 // 실제 자바기반의 application Config를 사용할땐 이걸로 사용함.

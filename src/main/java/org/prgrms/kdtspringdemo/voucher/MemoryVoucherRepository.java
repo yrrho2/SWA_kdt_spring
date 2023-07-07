@@ -1,5 +1,9 @@
 package org.prgrms.kdtspringdemo.voucher;
 
+import jakarta.annotation.PostConstruct;
+import jakarta.annotation.PreDestroy;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.config.ConfigurableBeanFactory;
 import org.springframework.context.annotation.Primary;
@@ -14,7 +18,7 @@ import java.util.concurrent.ConcurrentHashMap;
 @Repository
 @Qualifier("Memory")
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
-public class MemoryVoucherRepository implements VoucherRepository {
+public class MemoryVoucherRepository implements VoucherRepository, InitializingBean, DisposableBean {
     // Scope가 SINGLETONE이면 OrderTest에서 애들 만들때 하나만 만들어짐
     // ProtoTYPE이면 만들때 다르게 만들어짐
 
@@ -29,4 +33,25 @@ public class MemoryVoucherRepository implements VoucherRepository {
         storage.put(voucher.getVoucherId(), voucher);
         return voucher;
     }
+
+    @PostConstruct
+    public void postConstruct(){
+        System.out.println("PostConstruct Called!");
+    }
+    @PreDestroy
+    public void preDestroy(){
+        System.out.println("PreDestroy Called!");
+    }
+
+    @Override
+    public void destroy() throws Exception {
+        System.out.println("destroy Called!");
+    }
+
+    @Override
+    public void afterPropertiesSet() throws Exception {
+        System.out.println("afterPropertiesSet Called!");
+
+    }
+
 }
