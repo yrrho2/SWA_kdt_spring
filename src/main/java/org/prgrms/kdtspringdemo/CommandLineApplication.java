@@ -11,7 +11,6 @@ public class CommandLineApplication {
     public static void main(String[] args) throws IOException {
         Scanner terminal = new Scanner(System.in);
         String line;
-        ArrayList<UUID> UL = new ArrayList<UUID>();
         UUID vUUID;
         long amount;
 
@@ -39,14 +38,13 @@ public class CommandLineApplication {
                     voucherService.insert(file.saveVoucher(new FixedAmountVoucher(vUUID, amount), amount));
                 else if(line.equals("percent") | line.equals("p"))
                     voucherService.insert(file.saveVoucher(new PercentDiscountVoucher(vUUID, amount), amount));
-                UL.add(vUUID);
 
             }else if(line.equals("list") | line.equals("l")){
                 file.RefreshList();
                 Iterator iterator = file.getVoucher().iterator();
                 while(iterator.hasNext()){
                     UUID u = UUID.fromString(iterator.next().toString());
-                    System.out.println(u.toString());
+                    System.out.println(u);
                 }
 
             }else System.out.println("Wrong");
@@ -58,27 +56,14 @@ public class CommandLineApplication {
 class FileListSample {
     private String dirPath = "C:\\Users\\user\\dev-prgms\\kdt-spring-demo\\src\\main\\java\\org\\prgrms\\kdtspringdemo\\voucherFiles";
     private File dir = new File(dirPath);
-    private File[] files;
     private File[] fileString = dir.listFiles();
 
-    public FileListSample() {
-        this.files = dir.listFiles(new FileFilter() {
-            @Override
-            public boolean accept(File file) {
-                if(file.isFile() && file.getName().toUpperCase().startsWith("")) {
-                    return true;
-                }else {
-                    return false;
-                }
-            }
-        });
-    }
     public void RefreshList(){
         fileString = dir.listFiles();
     }
 
     public File[] getFiles() {
-        return files;
+        return fileString;
     }
     public void setFiles(String name) throws IOException {
         FileOutputStream output = new FileOutputStream(dirPath+"\\"+name+".txt");
