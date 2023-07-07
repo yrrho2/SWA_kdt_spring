@@ -49,3 +49,4 @@ public class OrderTester {
 // 즉 MemoryVoucherRepository를 가져올 수 있게됨.
 
 //var voucherRepository = applicationContext.getBean(VoucherRepository.class); 여기도 뭔지 모름. 전해줄수없음.
+// grow
