@@ -7,20 +7,13 @@ import java.util.*;
 
 public class CommandLineApplication {
     public static void main(String[] args) {
-        // 지금당장 구현할 수 없음.
-        // Voucher관리 프로그램인데, VoucherRepository와 Service에
-        // Voucher를 관리, 저장하는 기능이 없음.
-        // 만드려면 만들수있겠지만 나중에 수정을 맞닥드리는것이 확실함.
-        // Order를 만들고 이렇게저렇게 하려면... 역시 안됨 Repository에 기능이없음
-
         Scanner terminal = new Scanner(System.in);
-        String line = new String();
+        String line;
         ArrayList<UUID> UL = new ArrayList<UUID>();
-        Iterator<UUID> ULI = UL.iterator();
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
         var voucherService = applicationContext.getBean(MemoryVoucherRepository.class);
         UUID vUUID;
-        long amount=0L;
+        long amount;
         while(true){
             System.out.println(" ==== Voucher Program ==== ");
             System.out.println("Type exit to exit program.");
