@@ -13,11 +13,11 @@ public class PercentDiscountVoucher implements Voucher {
 
     @Override
     public UUID getVoucherId() {
-        return null;
+        return this.voucherId;
     }
 
     @Override
     public long discount(long beforeDiscount) {
-        return 0;
+        return beforeDiscount * (percent/100);
     }
 }

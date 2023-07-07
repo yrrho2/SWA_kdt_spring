@@ -1,9 +1,6 @@
 package org.prgrms.kdtspringdemo;
 
-import org.prgrms.kdtspringdemo.voucher.FixedAmountVoucher;
-import org.prgrms.kdtspringdemo.voucher.PercentDiscountVoucher;
-import org.prgrms.kdtspringdemo.voucher.Voucher;
-import org.prgrms.kdtspringdemo.voucher.VoucherService;
+import org.prgrms.kdtspringdemo.voucher.*;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 
 import java.util.*;
@@ -18,34 +15,37 @@ public class CommandLineApplication {
 
         Scanner terminal = new Scanner(System.in);
         String line = new String();
-        var customerId = UUID.randomUUID();
-        ArrayList<Voucher> vList = new ArrayList<Voucher>();
-        Iterator<Voucher> VI = vList.iterator();
+        ArrayList<UUID> UL = new ArrayList<UUID>();
+        Iterator<UUID> ULI = UL.iterator();
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
-        var voucherService = applicationContext.getBean(VoucherService.class);
-        int amount;
+        var voucherService = applicationContext.getBean(MemoryVoucherRepository.class);
+        UUID vUUID;
+        long amount=0L;
         while(true){
             System.out.println(" ==== Voucher Program ==== ");
             System.out.println("Type exit to exit program.");
             System.out.println("Type create to create a new voucher");
             System.out.println("Type list to list all voucher");
             line=terminal.next();
-            if(line.equals("exit")){
+            if(line.equals("exit") | line.equals("e")){
                 System.out.println("EXIT");
                 break;
-            }else if(line.equals("create")){
+            }else if(line.equals("create") | line.equals("c")){
                 System.out.println("Fixed? or Percent?");
                 line=terminal.next();
                 System.out.println("Amount?");
-                amount=terminal.nextInt();
-                if(line.equals("fixed"))
-                    vList.add(new FixedAmountVoucher(UUID.randomUUID(),amount));
-                else if(line.equals("percent"))
-                    vList.add(new PercentDiscountVoucher(UUID.randomUUID(), amount));
-            }else if(line.equals("list")){
-                while(VI.hasNext()){
-                    System.out.println(VI.next().getVoucherId().toString());
+                amount=terminal.nextLong();
+                vUUID = UUID.randomUUID();
+                if(line.equals("fixed") | line.equals("f"))
+                    voucherService.insert(new FixedAmountVoucher(vUUID, amount));
+                else if(line.equals("percent") | line.equals("p"))
+                    voucherService.insert(new PercentDiscountVoucher(vUUID, amount));
+                UL.add(vUUID);
+            }else if(line.equals("list") | line.equals("l")){
+                for(UUID u : UL){
+                    System.out.println(u.toString());
                 }
+
             }else System.out.println("Wrong");
         }
     }
