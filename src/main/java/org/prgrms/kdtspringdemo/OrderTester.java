@@ -1,6 +1,7 @@
 package org.prgrms.kdtspringdemo;
 
 import org.prgrms.kdtspringdemo.order.OrderItem;
+import org.prgrms.kdtspringdemo.order.OrderProperties;
 import org.prgrms.kdtspringdemo.order.OrderService;
 import org.prgrms.kdtspringdemo.voucher.FixedAmountVoucher;
 import org.prgrms.kdtspringdemo.voucher.VoucherRepository;
@@ -15,17 +16,22 @@ import java.util.UUID;
 public class OrderTester {
     public static void main(String[] args) {
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
-
-        var environment = applicationContext.getEnvironment();
-        var version = environment.getProperty("kdt.version");
-        var MinimumOrderAmount = environment.getProperty("kdt.minimum-order-amount", Integer.class);
-        var supportVendos = environment.getProperty("kdt.support-vendors", List.class);
-        System.out.println(MessageFormat.format("{0}", version));
-        System.out.println(MessageFormat.format("{0}", MinimumOrderAmount));
-        System.out.println(MessageFormat.format("{0}", supportVendos));
+//        var environment = applicationContext.getEnvironment();
+//        var version = environment.getProperty("kdt.version");
+//        var MinimumOrderAmount = environment.getProperty("kdt.minimum-order-amount", Integer.class);
+//        var supportVendos = environment.getProperty("kdt.support-vendors", List.class);
+//        var description = environment.getProperty("kdt.description", List.class);
+//        System.out.println(MessageFormat.format("{0}", version));
+//        System.out.println(MessageFormat.format("{0}", MinimumOrderAmount));
+//        System.out.println(MessageFormat.format("{0}", supportVendos));
+//        System.out.println(MessageFormat.format("{0}", description));
+        var orderProperties = applicationContext.getBean(OrderProperties.class);
+        System.out.println(MessageFormat.format("{0}", orderProperties.getVersion()));
+        System.out.println(MessageFormat.format("{0}", orderProperties.getMinimumOrderAmount()));
+        System.out.println(MessageFormat.format("{0}", orderProperties.getSupportVendors()));
+        System.out.println(MessageFormat.format("{0}", orderProperties.getDescription()));
 
         var customerId = UUID.randomUUID();
-
         var voucherRepository = BeanFactoryAnnotationUtils.qualifiedBeanOfType(applicationContext.getBeanFactory(), VoucherRepository.class, "Memory");
         var voucher = voucherRepository.insert(new FixedAmountVoucher(UUID.randomUUID(), 10L));
 

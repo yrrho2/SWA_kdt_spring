@@ -2,22 +2,26 @@ package org.prgrms.kdtspringdemo.order;
 
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.boot.context.properties.ConfigurationProperties;
+import org.springframework.context.annotation.Configuration;
 import org.springframework.stereotype.Component;
 
 import java.text.MessageFormat;
 import java.util.List;
 
-@Component
+@Configuration
+@ConfigurationProperties(prefix="kdt")
+// Yaml을보면 데이터들이 Class처럼 개별 필드같이 그룹핑되어있으니
+// 이것을 그룹핑시켜주는 타입을 만들어주는게 ConfigurationProperties
+// 큰 프로젝트에선 이렇게 타입을 주입시켜서 필드에 적용하는게 좋다
+    // api, DB, server따로 그룹화시켜서 필요할때마다 주입받아 사용가능
+// 규모가 작다면 Valueanotation으로도 충분함.
 public class OrderProperties implements InitializingBean {
-    @Value("${kdt.version:v0.0.0}")
     private String version;
     // properties에서 찾아보고, 없으면 : 뒤에있는걸 default로 사용하라는뜻.
-
-    @Value("${kdt.minimum-order-amount}")
     private int minimumOrderAmount;
-
-    @Value("${kdt.support-vendors}")
     private List<String> supportVendors;
+    private String description;
 
     // 그럼 시스템 환경변수를 가져올수있나????
     @Value("${OS}")
@@ -30,5 +34,37 @@ public class OrderProperties implements InitializingBean {
         System.out.println(MessageFormat.format("[OrderProperties] minimumOrderAmount -> {0}", minimumOrderAmount));
         System.out.println(MessageFormat.format("[OrderProperties] supportVendors -> {0}", supportVendors));
         System.out.println(MessageFormat.format("[OrderProperties] javaHome -> {0}", OS));
+    }
+
+    public String getVersion() {
+        return version;
+    }
+
+    public int getMinimumOrderAmount() {
+        return minimumOrderAmount;
+    }
+
+    public List<String> getSupportVendors() {
+        return supportVendors;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setVersion(String version) {
+        this.version = version;
+    }
+
+    public void setMinimumOrderAmount(int minimumOrderAmount) {
+        this.minimumOrderAmount = minimumOrderAmount;
+    }
+
+    public void setSupportVendors(List<String> supportVendors) {
+        this.supportVendors = supportVendors;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
 }

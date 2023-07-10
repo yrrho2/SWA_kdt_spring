@@ -1,20 +1,18 @@
 package org.prgrms.kdtspringdemo;
 
-import org.prgrms.kdtspringdemo.order.Order;
-import org.prgrms.kdtspringdemo.voucher.Voucher;
-import org.springframework.beans.factory.InitializingBean;
-import org.springframework.context.annotation.Bean;
+import org.prgrms.kdtspringdemo.configuration.YamlPropertiesFactory;
+import org.springframework.boot.context.properties.EnableConfigurationProperties;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.PropertySource;
 
-import java.util.Optional;
-import java.util.UUID;
 @Configuration
 @ComponentScan(basePackages ={"org.prgrms.kdtspringdemo.order",
         "org.prgrms.kdtspringdemo.voucher",
         "org.prgrms.kdtspringdemo.configuration"
         })
-@PropertySource("application.properties")
+// spring boot는 yaml을 지원. spring frame work는 지원안함
+@PropertySource(value = "application.yaml", factory = YamlPropertiesFactory.class)
+@EnableConfigurationProperties // spring boot꺼니까 framework에게 알려줌. 쓰라고
 public class AppConfiguration {
 }
