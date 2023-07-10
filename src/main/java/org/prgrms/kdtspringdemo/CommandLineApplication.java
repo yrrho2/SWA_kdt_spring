@@ -1,9 +1,14 @@
 package org.prgrms.kdtspringdemo;
 
 import org.prgrms.kdtspringdemo.voucher.*;
+import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
+import org.springframework.core.io.FileUrlResource;
+import org.springframework.core.io.Resource;
 
 import java.io.*;
+import java.lang.reflect.Array;
+import java.nio.file.Files;
 import java.util.*;
 
 
@@ -14,7 +19,7 @@ public class CommandLineApplication {
         UUID vUUID;
         long amount;
 
-        FileListSample file = new FileListSample();
+        VoucherFileControl file = new VoucherFileControl();
 
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
         var voucherService = applicationContext.getBean(MemoryVoucherRepository.class);
@@ -23,6 +28,7 @@ public class CommandLineApplication {
             System.out.println("Type exit to exit program.");
             System.out.println("Type create to create a new voucher");
             System.out.println("Type list to list all voucher");
+            System.out.println("Type black to list black list");
             line=terminal.next();
 
             if(line.equals("exit") | line.equals("e")){
@@ -47,13 +53,28 @@ public class CommandLineApplication {
                     System.out.println(u);
                 }
 
+            }else if(line.equals("black") | line.equals("b")){
+                BlackList BL = new BlackList(applicationContext);
+                System.out.println(BL.getData().stream().reduce("",(a,b)->a+"\n"+b));
+
             }else System.out.println("Wrong");
         }
     }
 }
+class BlackList {
+    private final Resource resource;
+    public BlackList(ApplicationContext applicationContext) {
+        this.resource = applicationContext.getResource("file:kdt_files/black_list.csv");
+    }
+    public ArrayList getData() throws IOException {
+        File file = this.resource.getFile();
+        ArrayList strings = (ArrayList) Files.readAllLines(file.toPath());
+        return strings;
+    }
+}
 
 
-class FileListSample {
+class VoucherFileControl {
     private String dirPath = "C:\\Users\\user\\dev-prgms\\kdt-spring-demo\\src\\main\\java\\org\\prgrms\\kdtspringdemo\\voucherFiles";
     private File dir = new File(dirPath);
     private File[] fileString = dir.listFiles();

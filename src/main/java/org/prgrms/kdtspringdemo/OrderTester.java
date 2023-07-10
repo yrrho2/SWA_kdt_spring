@@ -42,8 +42,8 @@ public class OrderTester {
 //        System.out.println(MessageFormat.format("{0}", orderProperties.getMinimumOrderAmount()));
 //        System.out.println(MessageFormat.format("{0}", orderProperties.getSupportVendors()));
 //        System.out.println(MessageFormat.format("{0}", orderProperties.getDescription()));
-        var resource = applicationContext.getResource("classpath:application.yaml");
-        var resource2 = applicationContext.getResource("file:test/sample.txt");
+        var resource1 = applicationContext.getResource("classpath:application.yaml");
+        var resource = applicationContext.getResource("file:kdt_files/black_list.csv");
         var resource3 = applicationContext.getResource("https://stackoverflow.com/");
         System.out.println(MessageFormat.format("Resource -> {0}", resource.getClass().getCanonicalName()));
 
