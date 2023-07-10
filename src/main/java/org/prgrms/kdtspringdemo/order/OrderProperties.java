@@ -9,13 +9,14 @@ import org.springframework.stereotype.Component;
 import java.text.MessageFormat;
 import java.util.List;
 
-@Configuration
-@ConfigurationProperties(prefix="kdt")
+
 // Yaml을보면 데이터들이 Class처럼 개별 필드같이 그룹핑되어있으니
 // 이것을 그룹핑시켜주는 타입을 만들어주는게 ConfigurationProperties
 // 큰 프로젝트에선 이렇게 타입을 주입시켜서 필드에 적용하는게 좋다
-    // api, DB, server따로 그룹화시켜서 필요할때마다 주입받아 사용가능
+// api, DB, server따로 그룹화시켜서 필요할때마다 주입받아 사용가능
 // 규모가 작다면 Valueanotation으로도 충분함.
+@Configuration
+@ConfigurationProperties(prefix="kdt")
 public class OrderProperties implements InitializingBean {
     private String version;
     // properties에서 찾아보고, 없으면 : 뒤에있는걸 default로 사용하라는뜻.

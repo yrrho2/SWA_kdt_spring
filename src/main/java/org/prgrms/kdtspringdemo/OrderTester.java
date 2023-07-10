@@ -3,8 +3,7 @@ package org.prgrms.kdtspringdemo;
 import org.prgrms.kdtspringdemo.order.OrderItem;
 import org.prgrms.kdtspringdemo.order.OrderProperties;
 import org.prgrms.kdtspringdemo.order.OrderService;
-import org.prgrms.kdtspringdemo.voucher.FixedAmountVoucher;
-import org.prgrms.kdtspringdemo.voucher.VoucherRepository;
+import org.prgrms.kdtspringdemo.voucher.*;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.Assert;
@@ -16,7 +15,12 @@ import java.util.UUID;
 public class OrderTester {
     public static void main(String[] args) {
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
-//        var environment = applicationContext.getEnvironment();
+        applicationContext.register(AppConfiguration.class);
+        var environment = applicationContext.getEnvironment();
+        environment.setActiveProfiles("dev");
+        applicationContext.refresh();
+
+
 //        var version = environment.getProperty("kdt.version");
 //        var MinimumOrderAmount = environment.getProperty("kdt.minimum-order-amount", Integer.class);
 //        var supportVendos = environment.getProperty("kdt.support-vendors", List.class);
@@ -32,8 +36,11 @@ public class OrderTester {
         System.out.println(MessageFormat.format("{0}", orderProperties.getDescription()));
 
         var customerId = UUID.randomUUID();
-        var voucherRepository = BeanFactoryAnnotationUtils.qualifiedBeanOfType(applicationContext.getBeanFactory(), VoucherRepository.class, "Memory");
+        var voucherRepository = applicationContext.getBean(VoucherRepository.class);
         var voucher = voucherRepository.insert(new FixedAmountVoucher(UUID.randomUUID(), 10L));
+
+        System.out.println(MessageFormat.format("is Jdbc Repo -> {0}", voucherRepository instanceof JdbcVoucherRepository));
+        System.out.println(MessageFormat.format("is Jdbc Repo -> {0}", voucherRepository.getClass().getCanonicalName()));
 
         var orderService = applicationContext.getBean(OrderService.class);
         var order = orderService.createOrder(customerId, new ArrayList<OrderItem>(){{
