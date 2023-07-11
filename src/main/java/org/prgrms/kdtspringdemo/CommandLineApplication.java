@@ -71,6 +71,8 @@ class BlackList {
         ArrayList strings = (ArrayList) Files.readAllLines(file.toPath());
         return strings;
     }
+    // 그리고 Yaml Propertie를 만든 후, 메모리 바우처 레포지토리를 개발 프로파일에서만 작동하도록
+
 }
 
 
