@@ -17,8 +17,8 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-@Profile({"local","default"})
 @Primary
+@Profile({"local","default"})
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class MemoryVoucherRepository implements VoucherRepository, InitializingBean, DisposableBean {
     // Scope가 SINGLETONE이면 OrderTest에서 애들 만들때 하나만 만들어짐

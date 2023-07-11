@@ -20,7 +20,7 @@ public class KdtSpringDemoApplication {
 
 	public static void main(String[] args) {
 		var springApplication = new SpringApplication(KdtSpringDemoApplication.class);
-		springApplication.setAdditionalProfiles("dev"); // dev 설정해준거렝
+		springApplication.setAdditionalProfiles("local"); // dev 설정해준거렝
 		var applicationContext = springApplication.run(args);
 
 		var orderProperties = applicationContext.getBean(OrderProperties.class);

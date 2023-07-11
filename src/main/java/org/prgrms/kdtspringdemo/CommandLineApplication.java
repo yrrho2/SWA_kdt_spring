@@ -9,6 +9,7 @@ import org.springframework.core.io.Resource;
 import java.io.*;
 import java.lang.reflect.Array;
 import java.nio.file.Files;
+import java.text.MessageFormat;
 import java.util.*;
 
 
@@ -22,7 +23,16 @@ public class CommandLineApplication {
         VoucherFileControl file = new VoucherFileControl();
 
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
-        var voucherService = applicationContext.getBean(MemoryVoucherRepository.class);
+        applicationContext.register(AppConfiguration.class);
+        var environment = applicationContext.getEnvironment();
+        environment.setActiveProfiles("local");
+        var voucherService = applicationContext.getBean(VoucherRepository.class);
+        // applicationContext.refresh();
+        // 이거쓰면 refresh() 두번이상 한다고 혼냄.
+        // 디버깅 해보니까 AnnotationConfigApplicationContext만들때 한번 해서 그런듯?
+
+
+
         while(true){
             System.out.println(" ==== Voucher Program ==== ");
             System.out.println("Type exit to exit program.");
@@ -56,6 +66,10 @@ public class CommandLineApplication {
             }else if(line.equals("black") | line.equals("b")){
                 BlackList BL = new BlackList(applicationContext);
                 System.out.println(BL.getData().stream().reduce("",(a,b)->a+"\n"+b));
+
+            }else if(line.equals("dev") | line.equals("d")){
+                System.out.println(MessageFormat.format("is Jdbc Repo -> {0}", voucherService instanceof JdbcVoucherRepository));
+                System.out.println(MessageFormat.format("is Jdbc Repo -> {0}", voucherService.getClass().getCanonicalName()));
 
             }else System.out.println("Wrong");
         }

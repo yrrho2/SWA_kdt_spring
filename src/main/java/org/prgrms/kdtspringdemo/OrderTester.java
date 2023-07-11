@@ -25,7 +25,7 @@ public class OrderTester {
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
         applicationContext.register(AppConfiguration.class);
         var environment = applicationContext.getEnvironment();
-        environment.setActiveProfiles("dev");
+        environment.setActiveProfiles("local");
         //applicationContext.refresh();
 
 
