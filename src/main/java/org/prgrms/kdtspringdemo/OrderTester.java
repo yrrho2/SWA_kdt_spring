@@ -4,6 +4,8 @@ import org.prgrms.kdtspringdemo.order.OrderItem;
 import org.prgrms.kdtspringdemo.order.OrderProperties;
 import org.prgrms.kdtspringdemo.order.OrderService;
 import org.prgrms.kdtspringdemo.voucher.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.BeanFactoryAnnotationUtils;
 import org.springframework.context.annotation.AnnotationConfigApplicationContext;
 import org.springframework.util.Assert;
@@ -21,6 +23,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class OrderTester {
+            private static final Logger logger = LoggerFactory.getLogger(OrderTester.class);
     public static void main(String[] args) throws IOException {
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
         applicationContext.register(AppConfiguration.class);
@@ -45,27 +48,31 @@ public class OrderTester {
         var resource1 = applicationContext.getResource("classpath:application.yaml");
         var resource = applicationContext.getResource("file:kdt_files/black_list.csv");
         var resource3 = applicationContext.getResource("https://stackoverflow.com/");
-        System.out.println(MessageFormat.format("Resource -> {0}", resource.getClass().getCanonicalName()));
+
 
         // file 전용
         var file = resource.getFile();
         var strings = Files.readAllLines(file.toPath());
-        System.out.println(strings.stream().reduce("",(a,b)->a+"\n"+b));
 
         // URL 전용
         var readableByteChannel = Channels.newChannel(resource3.getURL().openStream());
         var bufferedReader =  new BufferedReader(Channels.newReader(readableByteChannel, StandardCharsets.UTF_8));
         var contents = bufferedReader.lines().collect(Collectors.joining("\n"));
-        System.out.println(contents);
+
 
         var customerId = UUID.randomUUID();
         var voucherRepository = applicationContext.getBean(VoucherRepository.class);
         var voucher = voucherRepository.insert(new FixedAmountVoucher(UUID.randomUUID(), 10L));
 
-        System.out.println(MessageFormat.format("is Jdbc Repo -> {0}", voucherRepository instanceof JdbcVoucherRepository));
-        System.out.println(MessageFormat.format("is Jdbc Repo -> {0}", voucherRepository.getClass().getCanonicalName()));
-
         var orderService = applicationContext.getBean(OrderService.class);
+
+
+        logger.info(MessageFormat.format("Resource -> {0}", resource.getClass().getCanonicalName()));
+        logger.info(strings.stream().reduce("",(a,b)->a+"\n"+b));
+        //logger.info(contents);
+        logger.info(MessageFormat.format("is Jdbc Repo -> {0}", voucherRepository instanceof JdbcVoucherRepository));
+        logger.info(MessageFormat.format("is Jdbc Repo -> {0}", voucherRepository.getClass().getCanonicalName()));
+
         var order = orderService.createOrder(customerId, new ArrayList<OrderItem>(){{
             add(new OrderItem(UUID.randomUUID(), 100L,1));
         }}, voucher.getVoucherId());
