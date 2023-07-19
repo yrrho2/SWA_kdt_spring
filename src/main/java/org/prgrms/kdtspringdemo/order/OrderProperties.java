@@ -1,5 +1,7 @@
 package org.prgrms.kdtspringdemo.order;
 
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.context.properties.ConfigurationProperties;
@@ -18,6 +20,9 @@ import java.util.List;
 @Configuration
 @ConfigurationProperties(prefix="kdt")
 public class OrderProperties implements InitializingBean {
+
+    private final static Logger logger = LoggerFactory.getLogger(OrderProperties.class);
+
     private String version;
     // properties에서 찾아보고, 없으면 : 뒤에있는걸 default로 사용하라는뜻.
     private int minimumOrderAmount;
@@ -31,10 +36,10 @@ public class OrderProperties implements InitializingBean {
 
     @Override
     public void afterPropertiesSet() throws Exception {
-        System.out.println(MessageFormat.format("[OrderProperties] version -> {0}", version));
-        System.out.println(MessageFormat.format("[OrderProperties] minimumOrderAmount -> {0}", minimumOrderAmount));
-        System.out.println(MessageFormat.format("[OrderProperties] supportVendors -> {0}", supportVendors));
-        System.out.println(MessageFormat.format("[OrderProperties] javaHome -> {0}", OS));
+        logger.debug("[OrderProperties] version -> {}", version);
+        logger.debug("[OrderProperties] minimumOrderAmount -> {}", minimumOrderAmount);
+        logger.debug("[OrderProperties] supportVendors -> {}", supportVendors);
+        logger.debug("[OrderProperties] javaHome -> {}", OS);
     }
 
     public String getVersion() {
