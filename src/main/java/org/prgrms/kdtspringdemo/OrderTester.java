@@ -24,7 +24,7 @@ import java.util.UUID;
 import java.util.stream.Collectors;
 
 public class OrderTester {
-            private static final Logger logger = LoggerFactory.getLogger(OrderTester.class);
+    private static final Logger logger = LoggerFactory.getLogger(OrderTester.class);
     public static void main(String[] args) throws IOException {
         AnsiOutput.setEnabled(AnsiOutput.Enabled.ALWAYS);
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
