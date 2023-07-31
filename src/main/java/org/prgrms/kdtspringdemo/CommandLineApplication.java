@@ -19,6 +19,7 @@ public class CommandLineApplication {
         UUID vUUID;
         long amount;
 
+        // 뚜쉬
         VoucherFileControl file = new VoucherFileControl();
 
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
