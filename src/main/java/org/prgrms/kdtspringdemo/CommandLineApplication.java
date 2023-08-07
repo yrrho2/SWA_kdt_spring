@@ -19,7 +19,6 @@ public class CommandLineApplication {
         UUID vUUID;
         long amount;
 
-        // 뚜쉬
         VoucherFileControl file = new VoucherFileControl();
 
         var applicationContext =  new AnnotationConfigApplicationContext(AppConfiguration.class);
@@ -61,60 +60,61 @@ public class CommandLineApplication {
             }else System.out.println("Wrong");
         }
     }
-}
-class BlackList {
-    private final Resource resource;
-    public BlackList(ApplicationContext applicationContext) {
-        this.resource = applicationContext.getResource("file:kdt_files/black_list.csv");
+
+    static class BlackList {
+        private final Resource resource;
+        public BlackList(ApplicationContext applicationContext) {
+            this.resource = applicationContext.getResource("file:kdt_files/black_list.csv");
+        }
+        public ArrayList getData() throws IOException {
+            File file = this.resource.getFile();
+            ArrayList strings = (ArrayList) Files.readAllLines(file.toPath());
+            return strings;
+        }
     }
-    public ArrayList getData() throws IOException {
-        File file = this.resource.getFile();
-        ArrayList strings = (ArrayList) Files.readAllLines(file.toPath());
-        return strings;
-    }
-}
 // grow
 
 
-class VoucherFileControl {
-    private String dirPath = "C:\\Users\\user\\dev-prgms\\kdt-spring-demo\\src\\main\\java\\org\\prgrms\\kdtspringdemo\\voucherFiles";
-    private File dir = new File(dirPath);
-    private File[] fileString = dir.listFiles();
+    static class VoucherFileControl {
+        private String dirPath = "C:\\Users\\user\\dev-prgms\\kdt-spring-demo\\src\\main\\java\\org\\prgrms\\kdtspringdemo\\voucherFiles";
+        private File dir = new File(dirPath);
+        private File[] fileString = dir.listFiles();
 
-    public void RefreshList(){
-        fileString = dir.listFiles();
-    }
-
-    public File[] getFiles() {
-        return fileString;
-    }
-    public void setFiles(String name) throws IOException {
-        FileOutputStream output = new FileOutputStream(dirPath+"\\"+name+".txt");
-        output.close();
-    }
-    public Voucher saveVoucher(Voucher voucher, long amount) throws FileNotFoundException {
-        PrintWriter pw = new PrintWriter(dirPath+"\\"+voucher.getVoucherId()+".txt");
-        pw.println(voucher.getVoucherId());
-        pw.print(amount);
-        pw.close();
-        return voucher;
-    }
-    // 출처 https://docko.tistory.com/621
-
-    public ArrayList<UUID> getVoucher(){
-        ArrayList<UUID> FileUUID = new ArrayList<>();
-        try{
-            for(File file : fileString ){
-                BufferedReader br = new BufferedReader(new FileReader(dir+"//"+file.getName()));
-                String StringUUID = br.readLine();
-                FileUUID.add(UUID.fromString(StringUUID));
-                br.close();
-            }
-        } catch (IOException e){
-            System.out.println(e.getMessage());
-            e.getStackTrace();
+        public void RefreshList(){
+            fileString = dir.listFiles();
         }
-        return FileUUID;
-    }
 
+        public File[] getFiles() {
+            return fileString;
+        }
+        public void setFiles(String name) throws IOException {
+            FileOutputStream output = new FileOutputStream(dirPath+"\\"+name+".txt");
+            output.close();
+        }
+        public Voucher saveVoucher(Voucher voucher, long amount) throws FileNotFoundException {
+            PrintWriter pw = new PrintWriter(dirPath+"\\"+voucher.getVoucherId()+".txt");
+            pw.println(voucher.getVoucherId());
+            pw.print(amount);
+            pw.close();
+            return voucher;
+        }
+        // 출처 https://docko.tistory.com/621
+
+        public ArrayList<UUID> getVoucher(){
+            ArrayList<UUID> FileUUID = new ArrayList<>();
+            try{
+                for(File file : fileString ){
+                    BufferedReader br = new BufferedReader(new FileReader(dir+"//"+file.getName()));
+                    String StringUUID = br.readLine();
+                    FileUUID.add(UUID.fromString(StringUUID));
+                    br.close();
+                }
+            } catch (IOException e){
+                System.out.println(e.getMessage());
+                e.getStackTrace();
+            }
+            return FileUUID;
+        }
+
+    }
 }

@@ -17,7 +17,7 @@ import java.util.UUID;
 import java.util.concurrent.ConcurrentHashMap;
 
 @Repository
-@Profile({"local","test"})
+@Profile({"local","default", "test"})
 @Primary
 @Scope(value = ConfigurableBeanFactory.SCOPE_SINGLETON)
 public class MemoryVoucherRepository implements VoucherRepository, InitializingBean, DisposableBean {
