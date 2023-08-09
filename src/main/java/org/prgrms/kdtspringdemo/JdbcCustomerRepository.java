@@ -4,6 +4,7 @@ package org.prgrms.kdtspringdemo;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.nio.ByteBuffer;
 import java.sql.*;
 import java.util.ArrayList;
 import java.util.List;
@@ -104,21 +105,36 @@ public class JdbcCustomerRepository {
         }
         return 0;
     }
+    public List<UUID> findAllIds(){
+        List<UUID> uuids = new ArrayList<>();
+        try (
+                var connection = DriverManager.getConnection("jdbc:mysql://localhost/order_mgmt","root","root1234!");
+                var statement = connection.prepareStatement(SELECT_ALL_SQL);
+                var resultSet = statement.executeQuery();
+        ){
+            while(resultSet.next()){
+                var id = toUUID(resultSet.getBytes("customerid"));
+                uuids.add(id);
+            }
+        }catch (SQLException throwables) {
+            logger.error("Got error while closing conneciton", throwables);
+        }
+        return uuids;
+    }
+    static UUID toUUID(byte[] bytes){
+        var byteBuffer = ByteBuffer.wrap(bytes);
+        return new UUID(byteBuffer.getLong(), byteBuffer.getLong());
+    }
     public static void main(String[] args) {
         var customerRepository = new JdbcCustomerRepository();
 
         var count = customerRepository.deleteAllCustomer();
         logger.info("deleted count -> {}", count);
 
+        var customerId = UUID.randomUUID();
+        logger.info("created customerId -> {}", customerId);
+        logger.info("created UUID Version -> {}", customerId.version());
         customerRepository.insertCustomer(UUID.randomUUID(), "new-user", "new-user@gmail.com");
-
-        var customer2 = UUID.randomUUID();
-        customerRepository.insertCustomer(customer2, "new-user2", "new-user2@gmail.com");
-        customerRepository.findAllNames().forEach(v->logger.info("Found name : {}",v));
-
-        customerRepository.updateCustomerName(customer2, "updated_user2");
-        customerRepository.findAllNames().forEach(v->logger.info("Found name : {}",v));
-
-
+        customerRepository.findAllIds().forEach(v->logger.info("Found customerId : {} and version : {}",v, v.version()));
     }
 }
