@@ -4,6 +4,12 @@ import java.time.LocalDateTime;
 import java.util.UUID;
 
 public class Customer {
+
+    private final UUID custiner_id;
+    private String name;
+    private final String email;
+    private LocalDateTime last_login_at;
+    private final LocalDateTime created_at;
     public Customer(UUID custiner_id,String name, String email, LocalDateTime created_at) {
         validateName(name);
         this.custiner_id = custiner_id;
@@ -53,10 +59,4 @@ public class Customer {
         this.last_login_at = last_login_at;
         this.created_at = created_at;
     }
-
-    private final UUID custiner_id;
-    private String name;
-    private final String email;
-    private LocalDateTime last_login_at;
-    private final LocalDateTime created_at;
 }
