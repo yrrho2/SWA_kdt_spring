@@ -83,6 +83,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
             logger.error("Got error while closing conneciton", throwables);
             throw new RuntimeException(throwables);
         }
+        logger.info(allCustomer.get(0).getCreated_at().toString());
         return allCustomer.stream().findFirst();
     }
 

@@ -2,6 +2,8 @@ package org.prgrms.kdtspringdemo.customer;
 
 import com.zaxxer.hikari.HikariDataSource;
 import org.junit.jupiter.api.*;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
@@ -12,6 +14,7 @@ import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 import javax.sql.DataSource;
 
 import java.time.LocalDateTime;
+import java.time.temporal.ChronoUnit;
 import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.*;
@@ -21,6 +24,7 @@ import static org.hamcrest.Matchers.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CustomerJdbcRepositoryTest {
+    private static final Logger logger = LoggerFactory.getLogger(CustomerJdbcRepository.class);
     @Configuration
     @ComponentScan(
             basePackages = {"org.prgrms.kdtspringdemo.customer"}
@@ -39,7 +43,7 @@ class CustomerJdbcRepositoryTest {
 
     @BeforeAll
     void setup(){
-        newCustomer = new Customer(UUID.randomUUID(), "test-user", "test-user@gmail.com", LocalDateTime.now());
+        newCustomer = new Customer(UUID.randomUUID(), "test-user", "test-user@gmail.com", LocalDateTime.now().truncatedTo(ChronoUnit.MILLIS));
         customerJdbcRepository.deleteALL();
     }
 
