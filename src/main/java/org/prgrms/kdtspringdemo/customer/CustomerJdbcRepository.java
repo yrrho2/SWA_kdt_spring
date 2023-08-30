@@ -8,6 +8,7 @@ import javax.sql.DataSource;
 import java.nio.ByteBuffer;
 import java.sql.DriverManager;
 import java.sql.SQLException;
+import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,7 +47,23 @@ public class CustomerJdbcRepository implements CustomerRepository {
 
     @Override
     public Customer update(Customer customer) {
-        return null;
+        try (
+                var connection = dataSource.getConnection();
+                var statement = connection.prepareStatement("UPDATE customers SET name = ?, email = ?, last_login_at = ? WHERE customerID = UUID_TO_BIN(?)");
+        ){
+            statement.setString(1, customer.getName());
+            statement.setString(2, customer.getEmail());
+            statement.setTimestamp(3, customer.getLast_login_at()!=null ? Timestamp.valueOf(customer.getLast_login_at()) : null);
+            statement.setBytes(4, customer.getCustomerId().toString().getBytes());
+            var excuteupdate = statement.executeUpdate();
+            if(excuteupdate != 1){
+                throw new RuntimeException("Nothing was updated");
+            }
+            return customer;
+        }catch (SQLException throwables) {
+            logger.error("Got error while closing conneciton", throwables);
+            throw new RuntimeException((throwables));
+        }
     }
 
     @Override
@@ -141,6 +158,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
             throw new RuntimeException((throwables));
         }
     }
+
     private void mapToCustomer(@org.jetbrains.annotations.NotNull List<Customer> allCustomers, java.sql.ResultSet resultSet) throws SQLException{
         var customerName = resultSet.getString("name");
         var email = resultSet.getString("email");
