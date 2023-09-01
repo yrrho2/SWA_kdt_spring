@@ -2,13 +2,13 @@ package org.prgrms.kdtspringdemo.customer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
 
 import javax.sql.DataSource;
 import java.nio.ByteBuffer;
-import java.sql.DriverManager;
 import java.sql.SQLException;
-import java.sql.Time;
 import java.sql.Timestamp;
 import java.util.ArrayList;
 import java.util.List;
@@ -19,9 +19,20 @@ import java.util.UUID;
 public class CustomerJdbcRepository implements CustomerRepository {
     private static final Logger logger = LoggerFactory.getLogger(CustomerJdbcRepository.class);
     private final DataSource dataSource;
+    private final JdbcTemplate jdbcTemplate;
+    private static RowMapper<Customer> customerRowMapper = (resultSet, i)->{
+        var customerName = resultSet.getString("name");
+        var email = resultSet.getString("email");
+        var cutomerId = toUUID(resultSet.getBytes("customerid"));
+        var lastLoginAt = resultSet.getTimestamp("last_login_at")!=null?
+                resultSet.getTimestamp("last_login_at").toLocalDateTime():null;
+        var createdAt = resultSet.getTimestamp("create_at").toLocalDateTime();
+        return new Customer(cutomerId, customerName, email, createdAt, lastLoginAt);
+    };
 
-    public CustomerJdbcRepository(DataSource dataSource) {
+    public CustomerJdbcRepository(DataSource dataSource, JdbcTemplate jdbcTemplate) {
         this.dataSource = dataSource;
+        this.jdbcTemplate = jdbcTemplate;
     }
 
     @Override
@@ -68,20 +79,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
 
     @Override
     public List<Customer> findAll() {
-        List<Customer> allCustomer = new ArrayList<>();
-        try (
-                var connection = dataSource.getConnection();
-                var statement = connection.prepareStatement("select * from customers");
-                var resultSet = statement.executeQuery();
-        ){
-            while(resultSet.next()){
-                mapToCustomer(allCustomer, resultSet);
-            }
-        }catch (SQLException throwables) {
-            logger.error("Got error while closing conneciton", throwables);
-            throw new RuntimeException(throwables);
-        }
-        return allCustomer;
+        return jdbcTemplate.query("select * from customers",customerRowMapper);
     }
     @Override
     public Optional<Customer> findById(UUID customerID) {
@@ -159,7 +157,7 @@ public class CustomerJdbcRepository implements CustomerRepository {
         }
     }
 
-    private void mapToCustomer(@org.jetbrains.annotations.NotNull List<Customer> allCustomers, java.sql.ResultSet resultSet) throws SQLException{
+    private void mapToCustomer(List<Customer> allCustomers, java.sql.ResultSet resultSet) throws SQLException{
         var customerName = resultSet.getString("name");
         var email = resultSet.getString("email");
         var cutomerId = toUUID(resultSet.getBytes("customerid"));
