@@ -8,6 +8,7 @@ public interface CustomerRepository {
     Customer insert(Customer customer);
     Customer update(Customer customer);
     // Customer save(Customer customer);
+    int count();
     List<Customer> findAll();
     Optional<Customer> findById(UUID customerID);
     Optional<Customer> findByName(String name);

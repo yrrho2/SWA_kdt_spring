@@ -2,6 +2,7 @@ package org.prgrms.kdtspringdemo.customer;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.dao.EmptyResultDataAccessException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.RowMapper;
 import org.springframework.stereotype.Repository;
@@ -78,28 +79,22 @@ public class CustomerJdbcRepository implements CustomerRepository {
     }
 
     @Override
+    public int count() {
+        return jdbcTemplate.queryForObject("select count(*) from customers", Integer.class);
+    }
+
+    @Override
     public List<Customer> findAll() {
         return jdbcTemplate.query("select * from customers",customerRowMapper);
     }
     @Override
     public Optional<Customer> findById(UUID customerID) {
-        List<Customer> allCustomer = new ArrayList<>();
-        try (
-                var connection = dataSource.getConnection();
-                var statement = connection.prepareStatement("select * from customers WHERE customerID = UUID_TO_BIN(?)");
-        ){
-            statement.setBytes(1,customerID.toString().getBytes());
-            try(var resultSet = statement.executeQuery();){
-                while(resultSet.next()){
-                    mapToCustomer(allCustomer, resultSet);
-                }
-            }
-        }catch (SQLException throwables) {
-            logger.error("Got error while closing conneciton", throwables);
-            throw new RuntimeException(throwables);
+        try{
+            return Optional.of(jdbcTemplate.queryForObject("select * from customers WHERE customerID = UUID_TO_BIN(?)", customerRowMapper, customerID.toString().getBytes()));
+        }catch (EmptyResultDataAccessException e){
+            logger.error("Got empty result",e);
+            return Optional.empty();
         }
-        logger.info(allCustomer.get(0).getCreated_at().toString());
-        return allCustomer.stream().findFirst();
     }
 
     @Override
