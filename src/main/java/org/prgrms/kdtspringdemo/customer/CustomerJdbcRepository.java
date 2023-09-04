@@ -38,44 +38,28 @@ public class CustomerJdbcRepository implements CustomerRepository {
 
     @Override
     public Customer insert(Customer customer) {
-        try (
-                var connection = dataSource.getConnection();
-                var statement = connection.prepareStatement("INSERT INTO customers(customerId, name, email, create_at) VALUES (UUID_TO_BIN(?), ?, ?, ?)");
-        ){
-            statement.setBytes(1, customer.getCustomerId().toString().getBytes());
-            statement.setString(2, customer.getName());
-            statement.setString(3, customer.getEmail());
-            statement.setTimestamp(4, Timestamp.valueOf(customer.getCreated_at()));
-            var excuteupdate = statement.executeUpdate();
-            if(excuteupdate != 1){
-                throw new RuntimeException("Nothing was inserted");
-            }
-        }catch (SQLException throwables) {
-            logger.error("Got error while closing conneciton", throwables);
-            throw new RuntimeException(throwables);
+        var update = jdbcTemplate.update("INSERT INTO customers(customerId, name, email, create_at) VALUES (UUID_TO_BIN(?), ?, ?, ?)",
+                customer.getCustomerId().toString().getBytes(),
+                customer.getName(),
+                customer.getEmail(),
+                Timestamp.valueOf(customer.getCreated_at()));
+        if(update!=1){
+            throw new RuntimeException("Noting was inserted");
         }
         return customer;
     }
 
     @Override
     public Customer update(Customer customer) {
-        try (
-                var connection = dataSource.getConnection();
-                var statement = connection.prepareStatement("UPDATE customers SET name = ?, email = ?, last_login_at = ? WHERE customerID = UUID_TO_BIN(?)");
-        ){
-            statement.setString(1, customer.getName());
-            statement.setString(2, customer.getEmail());
-            statement.setTimestamp(3, customer.getLast_login_at()!=null ? Timestamp.valueOf(customer.getLast_login_at()) : null);
-            statement.setBytes(4, customer.getCustomerId().toString().getBytes());
-            var excuteupdate = statement.executeUpdate();
-            if(excuteupdate != 1){
-                throw new RuntimeException("Nothing was updated");
-            }
-            return customer;
-        }catch (SQLException throwables) {
-            logger.error("Got error while closing conneciton", throwables);
-            throw new RuntimeException((throwables));
+        var update = jdbcTemplate.update("UPDATE customers SET name = ?, email = ?, last_login_at = ? WHERE customerID = UUID_TO_BIN(?)",
+                customer.getName(),
+                customer.getEmail(),
+                customer.getLast_login_at()!=null ? Timestamp.valueOf(customer.getLast_login_at()) : null,
+                customer.getCustomerId().toString().getBytes());
+        if(update!=1){
+            throw new RuntimeException("Noting was inserted");
         }
+        return customer;
     }
 
     @Override
@@ -99,69 +83,28 @@ public class CustomerJdbcRepository implements CustomerRepository {
 
     @Override
     public Optional<Customer> findByName(String name) {
-        List<Customer> allCustomer = new ArrayList<>();
-        try (
-                var connection = dataSource.getConnection();
-                var statement = connection.prepareStatement("select * from customers WHERE name = ?");
-
-        ){
-            statement.setString(1,name);
-            try(var resultSet = statement.executeQuery();){
-                while(resultSet.next()){
-                    mapToCustomer(allCustomer, resultSet);
-                }
-            }
-        }catch (SQLException throwables) {
-            logger.error("Got error while closing conneciton", throwables);
-            throw new RuntimeException(throwables);
+        try{
+            return Optional.of(jdbcTemplate.queryForObject("select * from customers WHERE name = ?", customerRowMapper, name));
+        }catch (EmptyResultDataAccessException e){
+            logger.error("Got empty result",e);
+            return Optional.empty();
         }
-        return allCustomer.stream().findFirst();
     }
 
     @Override
     public Optional<Customer> findByEmail(String email) {
-        List<Customer> allCustomer = new ArrayList<>();
-        try (
-                var connection = dataSource.getConnection();
-                var statement = connection.prepareStatement("select * from customers WHERE email = ?");
-
-        ){
-            statement.setString(1,email);
-            try(var resultSet = statement.executeQuery();){
-                while(resultSet.next()){
-                    mapToCustomer(allCustomer, resultSet);
-                }
-            }
-        }catch (SQLException throwables) {
-            logger.error("Got error while closing conneciton", throwables);
-            throw new RuntimeException(throwables);
+        try{
+            return Optional.of(jdbcTemplate.queryForObject("select * from customers WHERE email = ?", customerRowMapper, email));
+        }catch (EmptyResultDataAccessException e){
+            logger.error("Got empty result",e);
+            return Optional.empty();
         }
-        return allCustomer.stream().findFirst();
     }
 
     @Override
     public void deleteALL() {
-        try (
-                var connection = dataSource.getConnection();
-                var statement = connection.prepareStatement("DELETE FROM customers");
-        ){
-            statement.executeUpdate();
-        }catch (SQLException throwables) {
-            logger.error("Got error while closing conneciton", throwables);
-            throw new RuntimeException((throwables));
-        }
+        jdbcTemplate.update("DELETE FROM customers");
     }
-
-    private void mapToCustomer(List<Customer> allCustomers, java.sql.ResultSet resultSet) throws SQLException{
-        var customerName = resultSet.getString("name");
-        var email = resultSet.getString("email");
-        var cutomerId = toUUID(resultSet.getBytes("customerid"));
-        var lastLoginAt = resultSet.getTimestamp("last_login_at")!=null?
-                resultSet.getTimestamp("last_login_at").toLocalDateTime():null;
-        var createdAt = resultSet.getTimestamp("create_at").toLocalDateTime();
-        allCustomers.add(new Customer(cutomerId, customerName, email, createdAt, lastLoginAt));
-    }
-
     static UUID toUUID(byte[] bytes){
         var byteBuffer = ByteBuffer.wrap(bytes);
         return new UUID(byteBuffer.getLong(), byteBuffer.getLong());
