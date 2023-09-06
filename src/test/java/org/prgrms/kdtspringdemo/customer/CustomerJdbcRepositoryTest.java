@@ -10,6 +10,8 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabase;
+import org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseBuilder;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import javax.sql.DataSource;
@@ -20,6 +22,7 @@ import java.util.UUID;
 
 import static org.hamcrest.MatcherAssert.*;
 import static org.hamcrest.Matchers.*;
+import static org.springframework.jdbc.datasource.embedded.EmbeddedDatabaseType.H2;
 
 @SpringJUnitConfig
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
@@ -33,6 +36,13 @@ class CustomerJdbcRepositoryTest {
     static class Config{
         @Bean
         public DataSource dataSource(){
+            EmbeddedDatabase db = new EmbeddedDatabaseBuilder()
+                    .generateUniqueName(true)
+                    .setType(H2)
+                    .setScriptEncoding("UTF-8")
+                    .ignoreFailedDrops(true)
+                    .addScript("schema.sql")
+                    .build();
             return DataSourceBuilder.create()
                     .url("jdbc:mysql://localhost/order_mgmt")
                     .username("root")
