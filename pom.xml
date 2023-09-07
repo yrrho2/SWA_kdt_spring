@@ -40,11 +40,11 @@
 			<version>8.0.33</version>
 			<scope>runtime</scope>
 		</dependency>
-
 		<dependency>
-			<groupId>com.h2database</groupId>
-			<artifactId>h2</artifactId>
-			<scope>runtime</scope>
+			<groupId>com.wix</groupId>
+			<artifactId>wix-embedded-mysql</artifactId>
+			<version>4.6.1</version>
+			<scope>test</scope>
 		</dependency>
 
 		<dependency>
@@ -61,6 +61,8 @@
         </dependency>
 
     </dependencies>
+
+
 
 	<build>
 		<plugins>
