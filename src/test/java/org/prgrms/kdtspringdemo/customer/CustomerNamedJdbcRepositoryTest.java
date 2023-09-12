@@ -10,6 +10,7 @@ import org.springframework.boot.jdbc.DataSourceBuilder;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
+import org.springframework.jdbc.BadSqlGrammarException;
 import org.springframework.jdbc.core.JdbcTemplate;
 import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
@@ -126,7 +127,11 @@ class CustomerNamedJdbcRepositoryTest {
     @Order(2)
     @DisplayName("고객을 추가할 수 있다.")
     public void testInsert()  {
-        customerJdbcRepository.insert(newCustomer);
+        try{
+            customerJdbcRepository.insert(newCustomer);
+        }catch(BadSqlGrammarException e){
+            logger.error("Got BadSqlGrammerException", e.getSQLException().getErrorCode(), e);
+        }
         var retrievedCustomer = customerJdbcRepository.findById(newCustomer.getCustomerId());
 
         assertThat(retrievedCustomer.isEmpty(), is(false));
