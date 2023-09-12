@@ -31,17 +31,19 @@ public class CustomerNamedJdbcRepository implements CustomerRepository {
         this.jdbcTemplate = jdbcTemplate;
     }
 
+    private Map<String,Object> toparamMap(Customer customer){
+    return new HashMap<String, Object>(){{
+        put("customerId", customer.getCustomerId().toString().getBytes());
+        put("name", customer.getName());
+        put("email", customer.getEmail());
+        put("createdAt", Timestamp.valueOf(customer.getCreated_at()));
+    }};
+    }
+
     @Override
     public Customer insert(Customer customer) {
-        var paramMap = new HashMap<String, Object>(){{
-            put("customerId", customer.getCustomerId().toString().getBytes());
-            put("name", customer.getName());
-            put("email", customer.getEmail());
-            put("createdAt", Timestamp.valueOf(customer.getCreated_at()));
-        }};
-        paramMap.put("custimerID", customer.getCustomerId());
         var update = jdbcTemplate.update("INSERT INTO customers(customerId, name, email, create_at) VALUES (UNHEX(REPLACE(:custinerId,'-','')), :name, :email, :createdAt)",
-                paramMap
+                toparamMap(customer)
                 );
 //        var update = jdbcTemplate.update("INSERT INTO customers(customerId, name, email, create_at) VALUES (UNHEX(REPLACE(?,'-','')), ?, ?, ?)",
 //                customer.getCustomerId().toString().getBytes(),
@@ -56,14 +58,8 @@ public class CustomerNamedJdbcRepository implements CustomerRepository {
 
     @Override
     public Customer update(Customer customer) {
-        var paramMap = new HashMap<String, Object>(){{
-            put("customerId", customer.getCustomerId().toString().getBytes());
-            put("name", customer.getName());
-            put("email", customer.getEmail());
-            put("lastLoginAt", Timestamp.valueOf(customer.getLast_login_at()));
-        }};
         var update = jdbcTemplate.update("UPDATE customers SET name = :name, email = :email, last_login_at = :lastLoginAt WHERE customerID = UNHEX(REPLACE(:customerId,'-',''))",
-                paramMap);
+                toparamMap(customer));
         if(update!=1){
             throw new RuntimeException("Noting was inserted");
         }

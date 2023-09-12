@@ -11,6 +11,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.ComponentScan;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.jdbc.core.JdbcTemplate;
+import org.springframework.jdbc.core.namedparam.NamedParameterJdbcTemplate;
 import org.springframework.test.context.junit.jupiter.SpringJUnitConfig;
 
 import javax.sql.DataSource;
@@ -30,7 +31,7 @@ import static org.hamcrest.Matchers.*;
 @TestMethodOrder(MethodOrderer.OrderAnnotation.class)
 @TestInstance(TestInstance.Lifecycle.PER_CLASS)
 class CustomerNamedJdbcRepositoryTest {
-    private static final Logger logger = LoggerFactory.getLogger(CustomerJdbcRepository.class);
+    private static final Logger logger = LoggerFactory.getLogger(CustomerNamedJdbcRepository.class);
     @Configuration
     @ComponentScan(
             basePackages = {"org.prgrms.kdtspringdemo.customer"}
@@ -48,9 +49,10 @@ class CustomerNamedJdbcRepositoryTest {
             database.setMaximumPoolSize(100);
             return database;
         }
+
         @Bean
-        public JdbcTemplate jdbcTemplate(DataSource dataSource){
-            return new JdbcTemplate(dataSource);
+        public NamedParameterJdbcTemplate namedParameterJdbcTemplate(JdbcTemplate jdbcTemplate){
+            return new NamedParameterJdbcTemplate(jdbcTemplate);
         }
     }
 
@@ -77,7 +79,7 @@ class CustomerNamedJdbcRepositoryTest {
     }
 
     @Autowired
-    CustomerJdbcRepository customerJdbcRepository;
+    CustomerNamedJdbcRepository customerJdbcRepository;
 
     @Autowired
     DataSource dataSource;
